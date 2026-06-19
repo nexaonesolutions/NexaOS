@@ -2,8 +2,6 @@
 output/
 /tmp/
 nexa-profile/work/
-nexa-profile/syslinux/
-nexa-profile/efiboot/
 
 # IDE files
 .vscode/
