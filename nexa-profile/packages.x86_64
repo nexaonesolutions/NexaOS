@@ -72,6 +72,8 @@ sddm
 qt5-quickcontrols
 qt5-quickcontrols2
 qt5-graphicaleffects
+qt5-svg
+qt6-svg
 
 # --- Status Bar, Launchers & Shell ---
 # NOTE: 'ags' (Aylur's Gtk Shell) is only on AUR and not reliably available via Chaotic-AUR.
