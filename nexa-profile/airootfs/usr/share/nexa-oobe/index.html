@@ -16,7 +16,7 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            cursor: none; /* Esconde o cursor durante a animação */
+            cursor: none;
         }
 
         .hello-container {
@@ -30,26 +30,47 @@
 
         .greeting {
             position: absolute;
-            font-size: 6rem;
             font-weight: 300;
-            letter-spacing: -2px;
+            letter-spacing: -1px;
             opacity: 0;
-            animation: fadeInOut 1s ease-in-out forwards;
+            text-align: center;
         }
 
-        /* Sequência de Animações: Cada saudação dura 1 segundo */
-        #g1 { animation-delay: 0s; }
-        #g2 { animation-delay: 1s; }
-        #g3 { animation-delay: 2s; }
-        #g4 { animation-delay: 3s; }
+        /* Animação 1: Hello (1 segundo) */
+        #g1 {
+            font-size: 6rem;
+            animation: helloFade 1.2s ease-in-out forwards;
+        }
 
-        @keyframes fadeInOut {
+        @keyframes helloFade {
             0% { opacity: 0; transform: scale(0.95); filter: blur(5px); }
             30% { opacity: 1; transform: scale(1); filter: blur(0); }
-            70% { opacity: 1; transform: scale(1); filter: blur(0); }
+            80% { opacity: 1; transform: scale(1); filter: blur(0); }
             100% { opacity: 0; transform: scale(1.05); filter: blur(5px); }
         }
 
+        /* Animação 2: Seja Bem Vindo(a) (3 segundos) */
+        #g2 {
+            font-size: 4rem;
+            animation: welcomeFade 3.5s ease-in-out forwards;
+            animation-delay: 1.5s; /* Espera o Hello sumir */
+        }
+
+        @keyframes welcomeFade {
+            0% { opacity: 0; transform: scale(0.95); filter: blur(5px); }
+            20% { opacity: 1; transform: scale(1); filter: blur(0); }
+            80% { opacity: 1; transform: scale(1); filter: blur(0); }
+            100% { opacity: 0; transform: scale(1.05); filter: blur(5px); }
+        }
+
+        .username-highlight {
+            font-weight: 600;
+            background: linear-gradient(90deg, #ffffff, #0088ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Animação 3: Tela Final */
         .final-screen {
             display: flex;
             flex-direction: column;
@@ -57,7 +78,7 @@
             opacity: 0;
             transform: translateY(20px);
             animation: finalFadeIn 2s ease-out forwards;
-            animation-delay: 4.5s; /* Inicia meio segundo após o último Hello sumir */
+            animation-delay: 5.5s; /* Entra após o Bem Vindo sumir */
         }
 
         @keyframes finalFadeIn {
@@ -65,20 +86,13 @@
         }
 
         .logo-text {
-            font-size: 4rem;
+            font-size: 5rem;
             font-weight: 700;
-            letter-spacing: -1px;
-            margin-bottom: 10px;
+            letter-spacing: -2px;
+            margin-bottom: 50px;
             background: linear-gradient(90deg, #ffffff, #a0a0a0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        .subtitle {
-            font-size: 1.5rem;
-            font-weight: 300;
-            color: #888888;
-            margin-bottom: 60px;
         }
 
         .start-btn {
@@ -101,7 +115,6 @@
             box-shadow: 0 0 30px rgba(255,255,255,0.3);
         }
 
-        /* Mostra o cursor apenas na tela final */
         .show-cursor {
             cursor: default !important;
         }
@@ -110,41 +123,38 @@
 <body>
 
     <div class="hello-container">
-        <div class="greeting" id="g1">Hello</div>
-        <div class="greeting" id="g2">Olá</div>
-        <div class="greeting" id="g3">Hola</div>
-        <div class="greeting" id="g4">Bonjour</div>
+        <div class="greeting" id="g1">Hello.</div>
+        <div class="greeting" id="g2">Seja Bem Vindo(a) a Nexa OS,<br><span class="username-highlight" id="dynamic-user">Convidado</span>.</div>
     </div>
 
     <div class="final-screen">
         <div class="logo-text">Nexa OS</div>
-        <div class="subtitle">A revolução começa agora.</div>
         <button class="start-btn" onclick="finishOOBE()">Começar a explorar</button>
     </div>
 
     <script>
-        // Revela o cursor do mouse apenas quando o botão "Começar" aparecer (após 4.5s)
+        // Buscar o nome do usuário real da máquina via API
+        fetch('http://127.0.0.1:8000/api/user')
+            .then(res => res.json())
+            .then(data => {
+                if(data.username) {
+                    document.getElementById('dynamic-user').innerText = data.username;
+                }
+            })
+            .catch(e => console.error("Erro ao buscar usuário", e));
+
+        // Revela o cursor após as animações textuais terminarem (aprox. 5.5s)
         setTimeout(() => {
             document.body.classList.add('show-cursor');
-        }, 4500);
+        }, 5500);
 
         function finishOOBE() {
-            // Animação de saída (fade out da tela inteira para o preto)
             document.body.style.transition = 'opacity 0.8s ease';
             document.body.style.opacity = '0';
             
-            // Aguarda o fade out e envia o sinal para o servidor matar a janela
             setTimeout(() => {
-                fetch('http://127.0.0.1:8000/api/oobe/close', {
-                    method: 'POST'
-                })
-                .then(() => {
-                    // Fallback caso a API falhe, tentar fechar via JS Kiosk rules
-                    window.close();
-                })
-                .catch(() => {
-                    window.close();
-                });
+                fetch('http://127.0.0.1:8000/api/oobe/close', { method: 'POST' })
+                .catch(() => window.close());
             }, 800);
         }
     </script>

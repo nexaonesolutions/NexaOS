@@ -169,6 +169,14 @@ async def close_oobe():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/user")
+async def get_current_user():
+    import getpass
+    try:
+        return {"username": getpass.getuser().capitalize()}
+    except Exception:
+        return {"username": "Usuário"}
+
 # Mount static frontend
 frontend_dir = "/usr/share/nexa-cc"
 if os.path.exists(frontend_dir):
