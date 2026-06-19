@@ -137,6 +137,9 @@ lib32-libx11
 lib32-libglvnd
 
 # --- Bootloader & Diagnostics ---
+grub
+os-prober
+efibootmgr
 syslinux
 memtest86+
 edk2-shell
