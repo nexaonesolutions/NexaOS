@@ -100,13 +100,13 @@ rsync
 htop
 mission-center
 fastfetch
-thorium-browser-bin
+firefox
 
 # --- Módulo Work (Desenvolvimento & Backend) ---
 docker
 python-pip
 python-fastapi
-python-uvicorn
+uvicorn
 python-requests
 jdk17-openjdk
 nodejs
