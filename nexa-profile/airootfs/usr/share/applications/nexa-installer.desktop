@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Instalar Nexa OS
+Comment=Instalador Nativo do Nexa OS
+Exec=firefox --kiosk http://127.0.0.1:8000/installer.html
+Icon=drive-harddisk
+Terminal=false
+Type=Application
+Categories=System;

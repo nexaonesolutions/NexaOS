@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexa OS - Instalação</title>
+    <style>
+        :root {
+            --glass-bg: rgba(20, 20, 20, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #ffffff;
+            --accent: #0088ff;
+            --danger: #ff4444;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: rgba(10, 10, 10, 0.9);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            backdrop-filter: blur(30px);
+        }
+        .container {
+            width: 800px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: var(--accent);
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        .btn:hover { background: #0077ee; }
+        .btn:active { transform: scale(0.98); }
+        
+        .alert {
+            background: rgba(255, 68, 68, 0.1);
+            border-left: 4px solid var(--danger);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+        }
+        
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NEXA NATIVE INSTALLER</h1>
+        
+        <div class="alert">
+            <strong>Aviso:</strong> A instalação apagará todos os dados do disco selecionado e o formatará em BTRFS nativo.
+        </div>
+
+        <div class="form-group">
+            <label>Disco de Destino</label>
+            <select id="driveSelect">
+                <option value="">Carregando discos...</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 20px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Nome Completo</label>
+                <input type="text" id="fullname" placeholder="Ex: Nexa User">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Nome de Usuário (Login)</label>
+                <input type="text" id="username" placeholder="Ex: nexa">
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 20px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Senha do Sistema (Sudo/Root)</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Nome do Computador (Hostname)</label>
+                <input type="text" id="hostname" placeholder="nexa-pc">
+            </div>
+        </div>
+
+        <button class="btn" id="installBtn" onclick="startInstall()">INSTALAR NEXA OS</button>
+        <div id="loading">Preparando o Archinstall. Acompanhe pelo terminal se necessário.</div>
+    </div>
+
+    <script>
+        // Carregar discos
+        fetch('/api/drives')
+            .then(res => res.json())
+            .then(data => {
+                const select = document.getElementById('driveSelect');
+                select.innerHTML = '<option value="">Selecione um disco rígido</option>';
+                data.drives.forEach(d => {
+                    select.innerHTML += `<option value="${d.name}">${d.name} - ${d.model} (${d.size})</option>`;
+                });
+            })
+            .catch(err => {
+                document.getElementById('driveSelect').innerHTML = '<option value="">Erro ao carregar discos</option>';
+            });
+
+        function startInstall() {
+            const req = {
+                drive: document.getElementById('driveSelect').value,
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                hostname: document.getElementById('hostname').value || 'nexa-pc'
+            };
+
+            if (!req.drive || !req.username || !req.password) {
+                alert("Preencha todos os campos obrigatórios!");
+                return;
+            }
+
+            if (!confirm(`TEM CERTEZA? O disco ${req.drive} será COMPLETAMENTE APAGADO!`)) {
+                return;
+            }
+
+            document.getElementById('installBtn').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+
+            fetch('/api/install', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(req)
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('loading').innerHTML = "✅ Instalação iniciada em segundo plano. Não desligue o computador.";
+            })
+            .catch(err => {
+                alert("Erro ao iniciar instalação: " + err);
+                document.getElementById('installBtn').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>

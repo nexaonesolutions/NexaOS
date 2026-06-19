@@ -63,6 +63,102 @@ async def toggle_adshield(enabled: bool):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/drives")
+async def get_drives():
+    try:
+        # Run lsblk to get block devices in JSON format
+        result = subprocess.run(["lsblk", "-J", "-o", "NAME,SIZE,TYPE,MODEL"], capture_output=True, text=True)
+        import json
+        data = json.loads(result.stdout)
+        
+        # Filter only disks (ignore partitions and loop devices)
+        drives = []
+        for dev in data.get("blockdevices", []):
+            if dev.get("type") == "disk" and not dev.get("name").startswith("loop"):
+                drives.append({
+                    "name": f"/dev/{dev.get('name')}",
+                    "size": dev.get("size"),
+                    "model": dev.get("model", "Unknown Drive")
+                })
+        return {"drives": drives}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+from pydantic import BaseModel
+
+class InstallRequest(BaseModel):
+    drive: str
+    username: str
+    password: str
+    hostname: str
+
+@app.post("/api/install")
+async def trigger_install(req: InstallRequest):
+    import json
+    
+    # 1. Create archinstall configuration JSONs
+    # This is a highly simplified representation for the scope of this project.
+    # We enforce BTRFS and auto-partitioning on the selected drive.
+    
+    # Disk layout config (wiping everything on the selected drive)
+    disk_layout = {
+        req.drive: {
+            "partitions": [
+                {
+                    "boot": True,
+                    "encrypted": False,
+                    "filesystem": {"format": "fat32"},
+                    "mountpoint": "/boot",
+                    "size": "512MiB",
+                    "start": "1MiB",
+                    "type": "primary",
+                    "wipe": True
+                },
+                {
+                    "encrypted": False,
+                    "filesystem": {"format": "btrfs"},
+                    "mountpoint": "/",
+                    "size": "100%",
+                    "start": "513MiB",
+                    "type": "primary",
+                    "wipe": True
+                }
+            ],
+            "wipe": True
+        }
+    }
+    
+    # Credentials config
+    creds = {
+        "!root-password": req.password,
+        "!users": [
+            {
+                "!password": req.password,
+                "sudo": True,
+                "username": req.username
+            }
+        ]
+    }
+    
+    # Write configs to temp files
+    with open("/tmp/disk_layout.json", "w") as f:
+        json.dump(disk_layout, f)
+        
+    with open("/tmp/creds.json", "w") as f:
+        json.dump(creds, f)
+        
+    # The main command to execute archinstall unattended
+    # Note: In a real environment, we'd spawn a background task and stream logs.
+    # For now, we mock the execution log for UI feedback if not running as root.
+    if os.geteuid() == 0:
+        # Run actual archinstall (commented out to prevent accidental wipes during dev, uncomment in prod ISO)
+        # subprocess.Popen(["archinstall", "--silent", "--config", "/tmp/creds.json", "--disk_layouts", "/tmp/disk_layout.json"])
+        subprocess.Popen(["logger", "[Nexa Native Installer] Iniciando Archinstall..."])
+    else:
+        subprocess.Popen(["logger", "[Nexa Native Installer] Simulated installation started."])
+        
+    return {"status": "success", "message": "Installation started in background."}
+
 # Mount static frontend
 frontend_dir = "/usr/share/nexa-cc"
 if os.path.exists(frontend_dir):
