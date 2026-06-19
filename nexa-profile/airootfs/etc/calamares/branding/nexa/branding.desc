@@ -23,7 +23,8 @@ images:
     productIcon:         "logo.png"
     productWelcome:      "welcome.png"
 
-slideshow:               "show.qml"
+# slideshow: desativado para evitar erro de QML faltando (show.qml não existe)
+slideshow:               ""
 
 style:
     sidebarBackground:    "#0a0a0a"

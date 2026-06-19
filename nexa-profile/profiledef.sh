@@ -22,8 +22,6 @@ file_permissions=(
   ["/etc/shadow"]="0:0:0400"
   ["/etc/gshadow"]="0:0:0400"
   ["/root"]="0:0:0750"
-  ["/root/.automated_script.sh"]="0:0:0755"
   ["/root/.gnupg"]="0:0:0700"
-  ["/usr/local/bin/choose-mirror"]="0:0:0755"
-  ["/usr/local/bin/livecd-sound"]="0:0:0755"
+  ["/usr/local/bin/nexa-ia.py"]="0:0:0755"
 )

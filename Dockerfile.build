@@ -30,8 +30,11 @@ RUN pacman -S --noconfirm \
     fontconfig \
     ttf-dejavu
 
-# 3. Configurar o diretório de trabalho (mapeado via volume pelo host)
+# 3. Atualizar o cache de fontes para o ImageMagick reconhecer as fontes instaladas
+RUN fc-cache -fv
+
+# 4. Configurar o diretório de trabalho (mapeado via volume pelo host)
 WORKDIR /build
 
-# 4. Ponto de entrada: executa o pipeline de 5 fases do build.sh
+# 5. Ponto de entrada: executa o pipeline de 5 fases do build.sh
 CMD ["/bin/bash", "./build.sh"]

@@ -8,8 +8,6 @@ e2fsprogs
 efibootmgr
 exfatprogs
 f2fs-tools
-grub
-haveged
 intel-ucode
 amd-ucode
 linux-zen
@@ -30,7 +28,6 @@ modemmanager
 networkmanager
 nfs-utils
 openssh
-wireless_tools
 wpa_supplicant
 
 # --- Sound & Audio ---
@@ -90,7 +87,6 @@ firefox
 
 # --- Módulo Work (Desenvolvimento & Backend) ---
 docker
-docker-compose
 jdk17-openjdk
 nodejs
 npm

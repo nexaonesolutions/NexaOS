@@ -8,7 +8,8 @@
 #   2. Injeção Offline do Oh My Zsh + plugins (git clone sem interatividade)
 #   3. Scaffolding de Assets Visuais (logos, splashs)
 #   4. Configuração de Links Simbólicos do Systemd no airootfs
-#   5. Compilação da ISO via mkarchiso
+#   5. Preparação dos diretórios de bootloader
+#   6. Compilação da ISO via mkarchiso
 # ==============================================================================
 
 set -euo pipefail
@@ -36,7 +37,7 @@ OUT_DIR="${SCRIPT_DIR}/output"
 
 echo ""
 echo -e "${BOLD}${CYAN}============================================================${RESET}"
-echo -e "${BOLD}${CYAN}   NEXA OS - Build Automation Pipeline v2.0               ${RESET}"
+echo -e "${BOLD}${CYAN}   NEXA OS - Build Automation Pipeline v2.1               ${RESET}"
 echo -e "${BOLD}${CYAN}   Powered by Nexa Solutions DevOps                        ${RESET}"
 echo -e "${BOLD}${CYAN}============================================================${RESET}"
 echo ""
@@ -55,7 +56,8 @@ check_dep() {
 
 check_dep mkarchiso  archiso
 check_dep git        git
-check_dep convert    imagemagick
+# IMv7 usa 'magick' como binário principal; 'convert' é wrapper deprecated
+check_dep magick     imagemagick
 
 # ==============================================================================
 # FASE 2: INJEÇÃO OFFLINE DO OH MY ZSH (CI/CD Safe — Zero Touch)
@@ -145,10 +147,11 @@ deploy_asset() {
     fi
 }
 
-# Comando base de placeholder: Logo centralizado com fundo azul Nexa
+# Comando base de placeholder usando 'magick' (IMv7 API — sem deprecation warnings)
 NEXA_BLUE="#0088ff"
 LOGO_SRC_NAME="LogoNexaOS.png"
-PLACEHOLDER_LOGO="convert -size 800x400 xc:'${NEXA_BLUE}' \
+
+PLACEHOLDER_LOGO="magick -size 800x400 xc:'${NEXA_BLUE}' \
     -gravity Center \
     -font 'DejaVu-Sans-Bold' \
     -pointsize 72 \
@@ -157,16 +160,16 @@ PLACEHOLDER_LOGO="convert -size 800x400 xc:'${NEXA_BLUE}' \
     -quality 100 \
     '${SDDM_LOGO}'"
 
-PLACEHOLDER_BG="convert -size 1920x1080 xc:'#020408' \
+PLACEHOLDER_BG="magick -size 1920x1080 xc:'#020408' \
     -gravity Center \
     -font 'DejaVu-Sans' \
     -pointsize 36 \
     -fill '${NEXA_BLUE}' \
-    -annotate 0 'NEXA OS  — Booting Kernel Zen' \
+    -annotate 0 'NEXA OS - Booting Kernel Zen' \
     -quality 100 \
     '${GRUB_BACKGROUND}'"
 
-PLACEHOLDER_WELCOME="convert -size 1200x800 xc:'#030814' \
+PLACEHOLDER_WELCOME="magick -size 1200x800 xc:'#030814' \
     -gravity Center \
     -font 'DejaVu-Sans-Bold' \
     -pointsize 60 \
@@ -176,12 +179,11 @@ PLACEHOLDER_WELCOME="convert -size 1200x800 xc:'#030814' \
     '${CALAMARES_WELCOME}'"
 
 # Deploy de cada asset (real ou placeholder)
-# A logo oficial é 'LogoNexaOS.png' — será copiada e distribuída para todos os destinos
-deploy_asset "${LOGO_SRC_NAME}"   "${SDDM_LOGO}"         "${PLACEHOLDER_LOGO}"
-deploy_asset "${LOGO_SRC_NAME}"   "${CALAMARES_LOGO}"     "cp '${SDDM_LOGO}' '${CALAMARES_LOGO}'"
-deploy_asset "${LOGO_SRC_NAME}"   "${GRUB_LOGO}"          "cp '${SDDM_LOGO}' '${GRUB_LOGO}'"
-deploy_asset "background.png" "${GRUB_BACKGROUND}" "${PLACEHOLDER_BG}"
-deploy_asset "welcome.png" "${CALAMARES_WELCOME}"  "${PLACEHOLDER_WELCOME}"
+deploy_asset "${LOGO_SRC_NAME}"  "${SDDM_LOGO}"       "${PLACEHOLDER_LOGO}"
+deploy_asset "${LOGO_SRC_NAME}"  "${CALAMARES_LOGO}"   "cp '${SDDM_LOGO}' '${CALAMARES_LOGO}'"
+deploy_asset "${LOGO_SRC_NAME}"  "${GRUB_LOGO}"        "cp '${SDDM_LOGO}' '${GRUB_LOGO}'"
+deploy_asset "background.png"    "${GRUB_BACKGROUND}"  "${PLACEHOLDER_BG}"
+deploy_asset "welcome.png"       "${CALAMARES_WELCOME}" "${PLACEHOLDER_WELCOME}"
 
 log_ok "Todos os assets de branding estão prontos."
 
@@ -191,8 +193,9 @@ log_ok "Todos os assets de branding estão prontos."
 log_info "Fase 4: Configurando serviços Systemd no airootfs..."
 
 WANTS_DIR="${PROFILE_DIR}/airootfs/etc/systemd/system/multi-user.target.wants"
+SYSTEMD_DIR="${PROFILE_DIR}/airootfs/etc/systemd/system"
 mkdir -p "${WANTS_DIR}"
-mkdir -p "${PROFILE_DIR}/airootfs/etc/systemd/system"
+mkdir -p "${SYSTEMD_DIR}"
 
 # Função para criar symlinks de forma idempotente
 link_service() {
@@ -206,25 +209,46 @@ link_service "/usr/lib/systemd/system/NetworkManager.service" \
     "${WANTS_DIR}/NetworkManager.service"
 
 link_service "/usr/lib/systemd/system/sddm.service" \
-    "${PROFILE_DIR}/airootfs/etc/systemd/system/display-manager.service"
+    "${SYSTEMD_DIR}/display-manager.service"
 
 link_service "/usr/lib/systemd/system/docker.service" \
     "${WANTS_DIR}/docker.service"
 
-link_service "/etc/systemd/system/nexa-ia.service" \
+# nexa-ia.service aponta para o arquivo dentro do airootfs (caminho correto no sistema instalado)
+link_service "/usr/lib/systemd/system/nexa-ia.service" \
     "${WANTS_DIR}/nexa-ia.service"
 
 # ==============================================================================
-# FASE 5: COMPILAÇÃO DA ISO
+# FASE 5: PREPARAÇÃO DOS DIRETÓRIOS DE BOOTLOADER
 # ==============================================================================
-log_info "Fase 5: Iniciando compilação do NexaOS-Installer.iso..."
+log_info "Fase 5: Preparando diretórios de bootloader (syslinux e efiboot)..."
 
-# Garantir que os diretórios de bootloader existem copiando os padrões do releng
-log_info "Preparando diretórios de bootloader (syslinux e efiboot)..."
-mkdir -p "${PROFILE_DIR}/syslinux"
-mkdir -p "${PROFILE_DIR}/efiboot"
-cp -r /usr/share/archiso/configs/releng/syslinux/* "${PROFILE_DIR}/syslinux/"
-cp -r /usr/share/archiso/configs/releng/efiboot/* "${PROFILE_DIR}/efiboot/"
+# Copiar configurações oficiais do archiso releng como base
+# Isso satisfaz a validação do mkarchiso para os bootmodes bios.syslinux e uefi-x64.systemd-boot
+RELENG_SRC="/usr/share/archiso/configs/releng"
+
+if [ -d "${RELENG_SRC}/syslinux" ]; then
+    mkdir -p "${PROFILE_DIR}/syslinux"
+    cp -r "${RELENG_SRC}/syslinux/." "${PROFILE_DIR}/syslinux/"
+    log_ok "Configurações syslinux copiadas do releng."
+else
+    log_warn "Diretório syslinux do releng não encontrado. Criando estrutura mínima..."
+    mkdir -p "${PROFILE_DIR}/syslinux"
+fi
+
+if [ -d "${RELENG_SRC}/efiboot" ]; then
+    mkdir -p "${PROFILE_DIR}/efiboot"
+    cp -r "${RELENG_SRC}/efiboot/." "${PROFILE_DIR}/efiboot/"
+    log_ok "Configurações efiboot copiadas do releng."
+else
+    log_warn "Diretório efiboot do releng não encontrado. Criando estrutura mínima..."
+    mkdir -p "${PROFILE_DIR}/efiboot"
+fi
+
+# ==============================================================================
+# FASE 6: COMPILAÇÃO DA ISO
+# ==============================================================================
+log_info "Fase 6: Iniciando compilação do NexaOS-Installer.iso..."
 
 # Limpar build anterior
 if [ -d "${WORK_DIR}" ]; then
