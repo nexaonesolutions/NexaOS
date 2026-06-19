@@ -19,6 +19,8 @@ ntfs-3g
 parted
 sudo
 systemd
+apparmor
+zram-generator
 
 # --- Network & Connection ---
 dhcpcd
@@ -95,8 +97,9 @@ wget
 curl
 rsync
 htop
+mission-center
 fastfetch
-firefox
+thorium-browser-bin
 
 # --- Módulo Work (Desenvolvimento & Backend) ---
 docker
