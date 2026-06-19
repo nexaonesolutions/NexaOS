@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexa OS - Instalação</title>
+    <title>Nexa OS - Instalação Guiada</title>
     <style>
         :root {
             --glass-bg: rgba(20, 20, 20, 0.4);
@@ -11,6 +11,7 @@
             --text-color: #ffffff;
             --accent: #0088ff;
             --danger: #ff4444;
+            --success: #00c853;
         }
         body {
             margin: 0;
@@ -25,18 +26,35 @@
             backdrop-filter: blur(30px);
         }
         .container {
-            width: 800px;
+            width: 700px;
+            min-height: 450px;
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: 16px;
             padding: 40px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
         h1 {
             text-align: center;
             margin-top: 0;
             font-weight: 300;
             letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+        .step {
+            display: none;
+            flex: 1;
+        }
+        .step.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .form-group {
             margin-bottom: 20px;
@@ -62,21 +80,35 @@
         input:focus, select:focus {
             border-color: var(--accent);
         }
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
         .btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--accent);
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
             color: white;
-            border: none;
+            border: 1px solid var(--glass-border);
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
-            transition: background 0.3s, transform 0.1s;
-            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        .btn:hover { background: rgba(255, 255, 255, 0.2); }
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
             font-weight: 600;
         }
-        .btn:hover { background: #0077ee; }
-        .btn:active { transform: scale(0.98); }
+        .btn-primary:hover { background: #0077ee; }
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            font-weight: 600;
+            width: 100%;
+        }
+        .btn-danger:hover { background: #cc0000; }
         
         .alert {
             background: rgba(255, 68, 68, 0.1);
@@ -87,57 +119,138 @@
             font-size: 0.9rem;
         }
         
+        .summary-box {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            margin-bottom: 20px;
+        }
+        .summary-box p {
+            margin: 8px 0;
+            color: #ddd;
+        }
+        .summary-box strong {
+            color: white;
+        }
+
         #loading {
             display: none;
             text-align: center;
-            margin-top: 20px;
-            color: var(--accent);
+            margin-top: 40px;
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
+        .stepper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--glass-border);
+            transition: 0.3s;
+        }
+        .step-dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>NEXA NATIVE INSTALLER</h1>
+    <div class="container" id="main-container">
+        <h1>Instalação do Nexa OS</h1>
         
-        <div class="alert">
-            <strong>Aviso:</strong> A instalação apagará todos os dados do disco selecionado e o formatará em BTRFS nativo.
+        <div class="stepper">
+            <div class="step-dot active" id="dot-1"></div>
+            <div class="step-dot" id="dot-2"></div>
+            <div class="step-dot" id="dot-3"></div>
         </div>
 
-        <div class="form-group">
-            <label>Disco de Destino</label>
-            <select id="driveSelect">
-                <option value="">Carregando discos...</option>
-            </select>
-        </div>
+        <!-- PASSO 1: DISCO -->
+        <div class="step active" id="step-1">
+            <h2>1. Seleção de Destino</h2>
+            <p style="color: #aaa; margin-bottom: 25px;">Escolha onde o Nexa OS será instalado. Este disco será formatado.</p>
+            
+            <div class="form-group">
+                <label>Disco Rígido (HD/SSD)</label>
+                <select id="driveSelect">
+                    <option value="">Procurando discos...</option>
+                </select>
+            </div>
 
-        <div style="display: flex; gap: 20px;">
-            <div class="form-group" style="flex: 1;">
-                <label>Nome Completo</label>
-                <input type="text" id="fullname" placeholder="Ex: Nexa User">
-            </div>
-            <div class="form-group" style="flex: 1;">
-                <label>Nome de Usuário (Login)</label>
-                <input type="text" id="username" placeholder="Ex: nexa">
-            </div>
-        </div>
-
-        <div style="display: flex; gap: 20px;">
-            <div class="form-group" style="flex: 1;">
-                <label>Senha do Sistema (Sudo/Root)</label>
-                <input type="password" id="password" placeholder="••••••••">
-            </div>
-            <div class="form-group" style="flex: 1;">
-                <label>Nome do Computador (Hostname)</label>
-                <input type="text" id="hostname" placeholder="nexa-pc">
+            <div class="btn-group" style="justify-content: flex-end;">
+                <button class="btn btn-primary" onclick="nextStep(2)">Avançar ❯</button>
             </div>
         </div>
 
-        <button class="btn" id="installBtn" onclick="startInstall()">INSTALAR NEXA OS</button>
-        <div id="loading">Preparando o Archinstall. Acompanhe pelo terminal se necessário.</div>
+        <!-- PASSO 2: CREDENCIAIS -->
+        <div class="step" id="step-2">
+            <h2>2. Perfil do Usuário</h2>
+            <p style="color: #aaa; margin-bottom: 25px;">Configure as credenciais administrativas do seu novo sistema.</p>
+            
+            <div style="display: flex; gap: 20px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Nome Completo</label>
+                    <input type="text" id="fullname" placeholder="Ex: Nexa User">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Nome de Usuário (Login)</label>
+                    <input type="text" id="username" placeholder="Ex: nexa" onkeyup="updateSummary()">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Senha Segura</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Nome do PC (Hostname)</label>
+                    <input type="text" id="hostname" placeholder="nexa-pc" onkeyup="updateSummary()">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="prevStep(1)">❮ Voltar</button>
+                <button class="btn btn-primary" onclick="nextStep(3)">Avançar ❯</button>
+            </div>
+        </div>
+
+        <!-- PASSO 3: REVISÃO E CONFIRMAÇÃO -->
+        <div class="step" id="step-3">
+            <h2>3. Resumo da Instalação</h2>
+            
+            <div class="alert">
+                <strong>Atenção!</strong> Não há volta a partir daqui. O disco será permanentemente apagado e formatado com o sistema BTRFS.
+            </div>
+
+            <div class="summary-box">
+                <p>Disco Alvo: <strong id="sum-drive">Nenhum</strong></p>
+                <p>Usuário Admin: <strong id="sum-user">Nenhum</strong></p>
+                <p>Nome da Máquina: <strong id="sum-host">nexa-pc</strong></p>
+                <p>Sistema de Arquivos: <strong>BTRFS (Moderno)</strong></p>
+            </div>
+
+            <div class="btn-group" style="flex-direction: column; gap: 15px;">
+                <button class="btn btn-danger" onclick="startInstall()">💣 FORMATAR E INSTALAR</button>
+                <button class="btn" onclick="prevStep(2)" style="width: 100%;">Cancelar e Voltar</button>
+            </div>
+        </div>
+
+        <!-- TELA DE LOADING INVISÍVEL ATÉ O CLIQUE -->
+        <div id="loading">
+            <h2>⚙️ Instalando o Nexa OS...</h2>
+            <p style="color: #aaa; margin-top: 10px;">A cópia de arquivos está acontecendo no painel de fundo.<br>Por favor, aguarde e não desligue o computador.</p>
+        </div>
     </div>
 
     <script>
-        // Carregar discos
+        // Fetch drives on load
         fetch('/api/drives')
             .then(res => res.json())
             .then(data => {
@@ -148,8 +261,48 @@
                 });
             })
             .catch(err => {
-                document.getElementById('driveSelect').innerHTML = '<option value="">Erro ao carregar discos</option>';
+                document.getElementById('driveSelect').innerHTML = '<option value="">Erro ao buscar discos</option>';
             });
+
+        function updateSummary() {
+            const drive = document.getElementById('driveSelect');
+            const user = document.getElementById('username').value;
+            const host = document.getElementById('hostname').value;
+
+            document.getElementById('sum-drive').innerText = drive.options[drive.selectedIndex]?.text || "Nenhum";
+            document.getElementById('sum-user').innerText = user || "Nenhum";
+            document.getElementById('sum-host').innerText = host || "nexa-pc";
+        }
+
+        function nextStep(step) {
+            // Validation before moving to step 2
+            if (step === 2 && !document.getElementById('driveSelect').value) {
+                alert("Por favor, selecione um disco antes de avançar.");
+                return;
+            }
+            // Validation before moving to step 3
+            if (step === 3 && (!document.getElementById('username').value || !document.getElementById('password').value)) {
+                alert("O Nome de Usuário e a Senha são obrigatórios.");
+                return;
+            }
+
+            updateSummary();
+            showStep(step);
+        }
+
+        function prevStep(step) {
+            showStep(step);
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.step-dot').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('step-' + step).classList.add('active');
+            for(let i=1; i<=step; i++) {
+                document.getElementById('dot-' + i).classList.add('active');
+            }
+        }
 
         function startInstall() {
             const req = {
@@ -159,16 +312,10 @@
                 hostname: document.getElementById('hostname').value || 'nexa-pc'
             };
 
-            if (!req.drive || !req.username || !req.password) {
-                alert("Preencha todos os campos obrigatórios!");
-                return;
-            }
-
-            if (!confirm(`TEM CERTEZA? O disco ${req.drive} será COMPLETAMENTE APAGADO!`)) {
-                return;
-            }
-
-            document.getElementById('installBtn').style.display = 'none';
+            // Hide everything and show loading
+            document.querySelectorAll('.step').forEach(el => el.style.display = 'none');
+            document.querySelector('.stepper').style.display = 'none';
+            document.querySelector('h1').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
 
             fetch('/api/install', {
@@ -178,12 +325,11 @@
             })
             .then(res => res.json())
             .then(data => {
-                document.getElementById('loading').innerHTML = "✅ Instalação iniciada em segundo plano. Não desligue o computador.";
+                // Keep loading screen, the user will reboot manually when ready or we can add a polling mechanism later
             })
             .catch(err => {
-                alert("Erro ao iniciar instalação: " + err);
-                document.getElementById('installBtn').style.display = 'block';
-                document.getElementById('loading').style.display = 'none';
+                alert("Erro catastrófico ao iniciar instalação: " + err);
+                location.reload();
             });
         }
     </script>
