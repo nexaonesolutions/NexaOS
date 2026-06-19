@@ -19,4 +19,5 @@ airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86')
 file_permissions=(
   ["/etc/shadow"]="0:0:0400"
   ["/etc/gshadow"]="0:0:0400"
+  ["/root/customize_airootfs.sh"]="0:0:0755"
 )
