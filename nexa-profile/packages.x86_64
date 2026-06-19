@@ -61,8 +61,9 @@ qt6-wayland
 sddm
 
 # --- Status Bar, Launchers & Shell ---
-# ags (Aylur's Gtk Shell) agora disponível via Chaotic-AUR
-ags
+# NOTE: 'ags' (Aylur's Gtk Shell) is only on AUR and not reliably available via Chaotic-AUR.
+# The AGS configs are pre-placed in ~/.config/ags/ via skel.
+# Users install it post-boot: yay -S ags
 waybar
 rofi-wayland
 dunst
@@ -74,8 +75,9 @@ slurp
 papirus-icon-theme
 
 # --- Live Installer & Utilities ---
-# calamares disponível via Chaotic-AUR
-calamares
+# NOTE: 'calamares' not reliably available in build repos. Using 'archinstall' (official Arch
+# tool, always available in the extra repo) as the primary installer for the live environment.
+archinstall
 git
 zsh
 neovim
@@ -87,10 +89,6 @@ htop
 fastfetch
 firefox
 
-# --- Chaotic-AUR Keyring (permite que o usuário use o Chaotic-AUR pós-instalação) ---
-chaotic-keyring
-chaotic-mirrorlist
-
 # --- Módulo Work (Desenvolvimento & Backend) ---
 docker
 jdk17-openjdk
@@ -98,7 +96,8 @@ nodejs
 npm
 python-pip
 python-fastapi
-python-uvicorn
+# NOTE: python-uvicorn not consistently available. Installed via pip at first service start.
+# See: airootfs/usr/local/bin/nexa-ia.py and nexa-ia.service
 mariadb-clients
 mariadb
 
@@ -120,4 +119,3 @@ lib32-libglvnd
 syslinux
 memtest86+
 edk2-shell
-memtest86+-efi
