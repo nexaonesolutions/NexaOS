@@ -219,6 +219,13 @@ link_service "/etc/systemd/system/nexa-ia.service" \
 # ==============================================================================
 log_info "Fase 5: Iniciando compilação do NexaOS-Installer.iso..."
 
+# Garantir que os diretórios de bootloader existem copiando os padrões do releng
+log_info "Preparando diretórios de bootloader (syslinux e efiboot)..."
+mkdir -p "${PROFILE_DIR}/syslinux"
+mkdir -p "${PROFILE_DIR}/efiboot"
+cp -r /usr/share/archiso/configs/releng/syslinux/* "${PROFILE_DIR}/syslinux/"
+cp -r /usr/share/archiso/configs/releng/efiboot/* "${PROFILE_DIR}/efiboot/"
+
 # Limpar build anterior
 if [ -d "${WORK_DIR}" ]; then
     log_warn "Limpando diretório de trabalho anterior em ${WORK_DIR}..."
