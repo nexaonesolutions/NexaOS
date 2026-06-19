@@ -250,6 +250,14 @@ fi
 # ==============================================================================
 log_info "Fase 6: Iniciando compilação do NexaOS-Installer.iso..."
 
+# Garantir que o keyring do pacman está populado e os bancos sincronizados.
+# Isso é crítico em ambientes containerizados onde o keyring pode estar vazio.
+log_info "Inicializando keyring do pacman e sincronizando bases de dados..."
+pacman-key --init
+pacman-key --populate archlinux
+pacman -Sy --noconfirm
+log_ok "Keyring e bases de dados prontos."
+
 # Limpar build anterior
 if [ -d "${WORK_DIR}" ]; then
     log_warn "Limpando diretório de trabalho anterior em ${WORK_DIR}..."

@@ -14,10 +14,15 @@ FROM archlinux:latest
 LABEL maintainer="Nexa Solutions <nexasolutions@github.com>"
 LABEL description="Ambiente de build isolado para a ISO do Nexa OS"
 
-# 1. Atualizar o sistema base do container Arch Linux
+# 1. Inicializar o keyring do pacman — CRÍTICO para containers Arch Linux.
+#    Sem isso, o pacman não consegue verificar assinaturas de pacotes.
+RUN pacman-key --init && \
+    pacman-key --populate archlinux
+
+# 2. Atualizar o sistema base do container Arch Linux
 RUN pacman -Syu --noconfirm
 
-# 2. Instalar dependências do pipeline de compilação
+# 3. Instalar dependências do pipeline de compilação
 RUN pacman -S --noconfirm \
     archiso \
     git \
@@ -30,11 +35,11 @@ RUN pacman -S --noconfirm \
     fontconfig \
     ttf-dejavu
 
-# 3. Atualizar o cache de fontes para o ImageMagick reconhecer as fontes instaladas
+# 4. Atualizar o cache de fontes para o ImageMagick reconhecer as fontes instaladas
 RUN fc-cache -fv
 
-# 4. Configurar o diretório de trabalho (mapeado via volume pelo host)
+# 5. Configurar o diretório de trabalho (mapeado via volume pelo host)
 WORKDIR /build
 
-# 5. Ponto de entrada: executa o pipeline de 5 fases do build.sh
+# 6. Ponto de entrada: executa o pipeline de 5 fases do build.sh
 CMD ["/bin/bash", "./build.sh"]

@@ -61,8 +61,10 @@ qt6-wayland
 sddm
 
 # --- Status Bar, Launchers & Shell ---
+# NOTE: 'ags' (Aylur's Gtk Shell) is AUR-only and must be installed post-install.
+#       Config files are pre-placed in ~/.config/ags/ via skel.
+#       Waybar included as the official repo fallback bar.
 waybar
-ags
 rofi-wayland
 dunst
 kitty
