@@ -159,6 +159,16 @@ async def trigger_install(req: InstallRequest):
         
     return {"status": "success", "message": "Installation started in background."}
 
+@app.post("/api/oobe/close")
+async def close_oobe():
+    try:
+        # Pkill all firefox instances running with OOBE class, or generic dispatch
+        # This gracefully dismisses the Out-Of-Box Experience full screen window
+        subprocess.run(["hyprctl", "dispatch", "killactive"], capture_output=True)
+        return {"status": "success"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Mount static frontend
 frontend_dir = "/usr/share/nexa-cc"
 if os.path.exists(frontend_dir):
