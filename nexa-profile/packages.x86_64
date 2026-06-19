@@ -75,6 +75,7 @@ sddm
 # The AGS configs are pre-placed in ~/.config/ags/ via skel.
 # Users install it post-boot: yay -S ags
 waybar
+nwg-dock-hyprland
 rofi-wayland
 dunst
 kitty
@@ -103,11 +104,13 @@ thorium-browser-bin
 
 # --- Módulo Work (Desenvolvimento & Backend) ---
 docker
+python-pip
+python-fastapi
+python-uvicorn
+python-requests
 jdk17-openjdk
 nodejs
 npm
-python-pip
-python-fastapi
 # NOTE: python-uvicorn not consistently available. Installed via pip at first service start.
 # See: airootfs/usr/local/bin/nexa-ia.py and nexa-ia.service
 mariadb-clients

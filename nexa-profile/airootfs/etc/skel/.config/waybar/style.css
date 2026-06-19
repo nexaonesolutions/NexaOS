@@ -37,6 +37,7 @@ window#waybar {
 #pulseaudio,
 #network,
 #bluetooth,
+#custom-weather,
 #tray {
     padding: 0 12px;
     margin: 4px 2px;
@@ -48,6 +49,13 @@ window#waybar {
     color: #e0e0e0;
     font-weight: 500;
     padding: 0 10px;
+}
+
+#custom-power {
+    color: #ff3333;
+    font-size: 16px;
+    padding: 0 12px;
+    margin: 4px 0px 4px 6px;
 }
 
 #battery.warning {

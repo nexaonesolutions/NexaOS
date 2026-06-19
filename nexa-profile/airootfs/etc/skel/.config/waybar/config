@@ -6,8 +6,8 @@
     "margin-left": 12,
     "margin-right": 12,
     "spacing": 8,
-    "modules-left": ["hyprland/workspaces", "hyprland/window"],
-    "modules-center": ["clock"],
+    "modules-left": ["custom/power", "hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["clock", "custom/weather"],
     "modules-right": ["pulseaudio", "network", "bluetooth", "battery", "tray"],
     
     "hyprland/workspaces": {
@@ -30,6 +30,19 @@
     "clock": {
         "format": "{:%H:%M  •  %d %b}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+    
+    "custom/power": {
+        "format": "⏻",
+        "tooltip": false,
+        "on-click": "rofi -show power-menu -modi power-menu:rofi-power-menu"
+    },
+    
+    "custom/weather": {
+        "format": "🌤️ {}",
+        "exec": "curl -s 'wttr.in/?format=1' || echo 'Offline'",
+        "interval": 3600,
+        "on-click": "kitty --class weather_app -e curl -s 'wttr.in'"
     },
     
     "pulseaudio": {
