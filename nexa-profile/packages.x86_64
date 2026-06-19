@@ -63,6 +63,9 @@ xdg-desktop-portal-hyprland
 polkit-kde-agent
 qt5-wayland
 qt6-wayland
+qt5ct
+qt6ct
+kvantum
 sddm
 
 # --- Status Bar, Launchers & Shell ---
@@ -78,6 +81,7 @@ wl-clipboard
 grim
 slurp
 papirus-icon-theme
+bibata-cursor-theme
 
 # --- Live Installer & Utilities ---
 # NOTE: 'calamares' not reliably available in build repos. Using 'archinstall' (official Arch
@@ -126,3 +130,4 @@ lib32-libglvnd
 syslinux
 memtest86+
 edk2-shell
+plymouth

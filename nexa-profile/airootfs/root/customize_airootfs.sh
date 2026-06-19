@@ -39,11 +39,14 @@ echo "nexa-os" > /etc/hostname
 echo "[NEXA] Hostname: nexa-os"
 
 # ==============================================================================
-# 3. SHELL PADRÃO — ZSH PARA ROOT E NOVOS USUÁRIOS
+# 3. SHELL PADRÃO E PLYMOUTH
 # ==============================================================================
 chsh -s /bin/zsh root
 sed -i 's|^SHELL=.*|SHELL=/bin/zsh|' /etc/default/useradd 2>/dev/null || true
 echo "[NEXA] Shell padrão definido como zsh."
+
+plymouth-set-default-theme bgrt || true
+echo "[NEXA] Plymouth theme set to bgrt."
 
 # ==============================================================================
 # 4. HABILITAR SERVIÇOS SYSTEMD NA ISO LIVE
