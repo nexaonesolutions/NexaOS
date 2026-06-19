@@ -93,7 +93,6 @@ bibata-cursor-theme
 # NOTE: 'calamares' not reliably available in build repos. Using 'archinstall' (official Arch
 # tool, always available in the extra repo) as the primary installer for the live environment.
 archinstall
-calamares
 git
 zsh
 neovim
