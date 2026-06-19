@@ -1,0 +1,159 @@
+/* ==============================================================================
+ *  NEXA OS - ROFI LAUNCHER THEME (config.rasi)
+ *  Estilo Spotlight / Raycast — Centralizado, Minimalista, Glassmorphic
+ *  Salvar em: airootfs/etc/skel/.config/rofi/config.rasi
+ * ============================================================================== */
+
+configuration {
+    modi:                   "drun,run,window";
+    show-icons:             true;
+    icon-theme:             "Papirus-Dark";
+    display-drun:           "";
+    display-run:            "";
+    display-window:         "󰖯";
+    drun-display-format:    "{name}";
+    terminal:               "kitty";
+    font:                   "Outfit 15";
+}
+
+@theme "nexa-spotlight"
+
+/* ==============================================================================
+ * PALETA DE CORES GLOBAL
+ * ============================================================================== */
+* {
+    bg-primary:         rgba(12, 12, 18, 0.82);
+    bg-input:           rgba(30, 32, 45, 0.9);
+    bg-selected:        rgba(0, 136, 255, 0.75);
+    bg-hover:           rgba(255, 255, 255, 0.06);
+    border-color:       rgba(255, 255, 255, 0.08);
+    text-primary:       rgba(255, 255, 255, 0.92);
+    text-muted:         rgba(255, 255, 255, 0.4);
+    text-selected:      #ffffff;
+    accent:             #0088ff;
+    glow:               rgba(0, 136, 255, 0.25);
+}
+
+/* ==============================================================================
+ * JANELA PRINCIPAL (Centralizada na Tela)
+ * ============================================================================== */
+window {
+    transparency:       "real";
+    background-color:   @bg-primary;
+    border:             1px solid @border-color;
+    border-radius:      18px;
+    width:              680px;
+    padding:            0px;
+    location:           center;
+    anchor:             center;
+    x-offset:          0px;
+    y-offset:          -80px;          /* Levemente acima do centro — estilo Spotlight */
+
+    box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 0 40px @glow;
+}
+
+/* ==============================================================================
+ * LAYOUT INTERNO PRINCIPAL
+ * ============================================================================== */
+mainbox {
+    background-color:   transparent;
+    padding:            0px;
+    spacing:            0px;
+}
+
+/* ==============================================================================
+ * CAMPO DE BUSCA (Search Input — Grande e Limpo)
+ * ============================================================================== */
+inputbar {
+    background-color:   transparent;
+    border:             none;
+    border-radius:      18px 18px 0 0;
+    padding:            18px 22px;
+    spacing:            12px;
+    children:           [prompt, entry];
+    border-bottom:      1px solid @border-color;
+}
+
+prompt {
+    background-color:   transparent;
+    text-color:         @accent;
+    font:               "Outfit Bold 18";
+    padding:            0 4px 0 0;
+}
+
+entry {
+    background-color:   transparent;
+    text-color:         @text-primary;
+    placeholder-color:  @text-muted;
+    placeholder:        "Pesquisar aplicativos, arquivos...";
+    font:               "Outfit 16";
+    cursor:             text;
+}
+
+/* ==============================================================================
+ * LISTA DE RESULTADOS
+ * ============================================================================== */
+listview {
+    background-color:   transparent;
+    padding:            8px;
+    spacing:            2px;
+    lines:              7;
+    scrollbar:          false;
+    border:             none;
+}
+
+/* Cada item do resultado */
+element {
+    background-color:   transparent;
+    text-color:         @text-primary;
+    border-radius:      10px;
+    padding:            10px 14px;
+    spacing:            12px;
+    orientation:        horizontal;
+    cursor:             pointer;
+    transition:         background 150ms ease;
+}
+
+element:hover {
+    background-color:   @bg-hover;
+}
+
+element selected.normal {
+    background-color:   @bg-selected;
+    text-color:         @text-selected;
+    box-shadow:         0 2px 12px @glow;
+}
+
+element-icon {
+    size:               26px;
+    cursor:             inherit;
+}
+
+element-text {
+    vertical-align:     0.5;
+    cursor:             inherit;
+    font:               "Outfit 14";
+}
+
+/* ==============================================================================
+ * RODAPÉ (Mensagem e Botões Auxiliares)
+ * ============================================================================== */
+message {
+    background-color:   transparent;
+    border-top:         1px solid @border-color;
+    padding:            8px 18px;
+}
+
+textbox {
+    background-color:   transparent;
+    text-color:         @text-muted;
+    font:               "Outfit 12";
+}
+
+/* Barra de scroll oculta */
+scrollbar {
+    width:              0px;
+}

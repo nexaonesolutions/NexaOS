@@ -1,0 +1,13 @@
+# Build outputs
+output/
+/tmp/
+nexa-profile/work/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini

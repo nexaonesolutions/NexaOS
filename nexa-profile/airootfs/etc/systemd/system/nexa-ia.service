@@ -1,0 +1,14 @@
+[Unit]
+Description=Nexa IA Core Daemon (FastAPI Automation Service)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/local/bin/nexa-ia.py
+Restart=always
+RestartSec=3
+User=root
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

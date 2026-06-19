@@ -1,0 +1,111 @@
+/* ==============================================================================
+ *  NEXA OS - AGS BAR STYLESHEET (CSS)
+ *  Glassmorphism Premium — Floating Top Bar Style
+ *  Salvar em: airootfs/etc/skel/.config/ags/style.css
+ * ============================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap");
+
+* {
+    all: unset;
+    font-family: "Outfit", "Segoe UI", sans-serif;
+    font-size: 13px;
+    color: #ffffff;
+}
+
+/* === JANELA PRINCIPAL (Barra Flutuante) === */
+window.top-bar {
+    background: transparent;
+}
+
+/* === CONTAINER INTERNO COM GLASSMORPHISM === */
+.bar-inner {
+    background: rgba(15, 15, 15, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 6px 16px;
+    min-height: 38px;
+
+    /* Blur simulado via gtk — o desfoque real vem do blur do Hyprland */
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* === MÓDULO ESQUERDO: WORKSPACES === */
+.workspaces {
+    spacing: 6px;
+}
+
+.workspace {
+    min-width: 28px;
+    min-height: 28px;
+    border-radius: 8px;
+    padding: 0 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: 600;
+    transition: all 200ms ease;
+}
+
+.workspace:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.workspace.active {
+    background: rgba(0, 136, 255, 0.75);
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 136, 255, 0.4);
+    font-weight: 700;
+}
+
+/* === MÓDULO CENTRAL: RELÓGIO === */
+.clock {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.5px;
+}
+
+/* === MÓDULO DIREITO === */
+.bar-right {
+    spacing: 14px;
+}
+
+/* Systray */
+.systray {
+    spacing: 8px;
+}
+
+.systray button {
+    border-radius: 6px;
+    padding: 4px;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 150ms ease;
+}
+
+.systray button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+/* Rede */
+.network-icon {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Bateria */
+.battery {
+    spacing: 4px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.battery.charging label {
+    color: #00ffcc;
+}
+
+.battery label {
+    font-size: 12px;
+    font-weight: 600;
+}

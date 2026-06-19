@@ -1,0 +1,78 @@
+/* ==============================================================================
+ *  NEXA OS - CALAMARES CUSTOM STYLESHEET (QSS)
+ *  Salvar em: airootfs/etc/calamares/branding/nexa/stylesheet.qss
+ * ============================================================================== */
+
+/* Janela Principal */
+QWidget {
+    background-color: #0c0f17;
+    color: #ffffff;
+    font-family: "Outfit", "Segoe UI", sans-serif;
+    font-size: 13px;
+}
+
+/* Painel de Navegação Lateral (Sidebar) */
+#sidebarApp {
+    background-color: #05070a;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Botões */
+QPushButton {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+QPushButton:hover {
+    background-color: #0088ff;
+    border-color: #33ccffff;
+}
+
+QPushButton:pressed {
+    background-color: #0066cc;
+}
+
+/* Inputs de Texto */
+QLineEdit {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 6px;
+    color: #ffffff;
+}
+
+QLineEdit:focus {
+    border-color: #0088ff;
+}
+
+/* Barras de Progresso */
+QProgressBar {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+QProgressBar::chunk {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0088ff, stop:1 #00ffcc);
+    border-radius: 5px;
+}
+
+/* Listas e Tabelas */
+QListView, QTreeView, QTableView {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: #ffffff;
+}
+
+QHeaderView::section {
+    background-color: #05070a;
+    padding: 4px;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+}

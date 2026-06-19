@@ -1,0 +1,35 @@
+# ==============================================================================
+#  NEXA OS - DOCKERFILE DE COMPILAÇÃO ISOLADA
+#  Ambiente containerizado Arch Linux para rodar o build.sh
+#  sem depender de um sistema host Arch nativo.
+#
+#  USO:
+#    No Windows via start-build.bat
+#    No Linux:  docker build -t nexaos-builder -f Dockerfile.build .
+#               docker run --rm -v "$(pwd):/build" --privileged nexaos-builder
+# ==============================================================================
+
+FROM archlinux:latest
+
+LABEL maintainer="Nexa Solutions <nexasolutions@github.com>"
+LABEL description="Ambiente de build isolado para a ISO do Nexa OS"
+
+# 1. Atualizar o sistema base do container Arch Linux
+RUN pacman -Syu --noconfirm
+
+# 2. Instalar dependências do pipeline de compilação
+RUN pacman -S --noconfirm \
+    archiso \
+    git \
+    bash \
+    imagemagick \
+    squashfs-tools \
+    libisoburn \
+    mtools \
+    dosfstools
+
+# 3. Configurar o diretório de trabalho (mapeado via volume pelo host)
+WORKDIR /build
+
+# 4. Ponto de entrada: executa o pipeline de 5 fases do build.sh
+CMD ["/bin/bash", "./build.sh"]

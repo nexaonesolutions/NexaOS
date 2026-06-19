@@ -1,0 +1,47 @@
+name: Compile Nexa OS ISO
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Nexa OS ISO
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          echo "=== Freeing up disk space on Runner ==="
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -h
+
+      - name: Build Nexa OS Builder Image
+        run: |
+          docker build -t nexaos-builder -f Dockerfile.build .
+
+      - name: Compile ISO (Isolated Container)
+        run: |
+          mkdir -p output
+          # Run with --privileged to allow loop devices mounting inside the container
+          docker run --rm \
+            --privileged \
+            -v ${{ github.workspace }}:/build \
+            nexaos-builder
+
+      - name: Upload Compiled ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: NexaOS-Installer-ISO
+          path: output/*.iso
+          if-no-files-found: error
+          retention-days: 7

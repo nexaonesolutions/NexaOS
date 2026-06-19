@@ -1,0 +1,32 @@
+# ==============================================================================
+#  NEXA OS - CALAMARES BRANDING DESCRIPTION
+#  Salvar em: airootfs/etc/calamares/branding/nexa/branding.desc
+# ==============================================================================
+
+---
+componentName:   nexa
+
+strings:
+    productName:         "Nexa OS"
+    shortProductName:    "NexaOS"
+    version:             "1.0-alpha"
+    shortVersion:        "1.0"
+    versionedName:       "Nexa OS 1.0-alpha"
+    shortVersionedName:  "NexaOS 1.0"
+    bootloaderEntryName: "Nexa OS"
+    productUrl:          "https://github.com/NexaSolutions/nexaos"
+    supportUrl:          "https://github.com/NexaSolutions/nexaos/issues"
+    releaseNotesUrl:     "https://github.com/NexaSolutions/nexaos/releases"
+
+images:
+    productLogo:         "logo.png"
+    productIcon:         "logo.png"
+    productWelcome:      "welcome.png"
+
+slideshow:               "show.qml"
+
+style:
+    sidebarBackground:    "#0a0a0a"
+    sidebarText:          "#ededed"
+    sidebarTextSelect:    "#0088ff"
+    sidebarTextHighlight: "#00ffcc"

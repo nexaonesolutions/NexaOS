@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexa Game Mode</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #051630 0%, #020710 100%);
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px 60px;
+        }
+
+        /* --- Barra Superior (Header) --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0088ff, #00ffcc);
+            box-shadow: 0 0 15px rgba(0, 136, 255, 0.6);
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #ffffff, #8ab4f8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .telemetry-container {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 10px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .stat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #00ffcc;
+            box-shadow: 0 0 8px #00ffcc;
+        }
+
+        .stat-dot.warning {
+            background-color: #ff9900;
+            box-shadow: 0 0 8px #ff9900;
+        }
+
+        /* --- Carrossel de Jogos --- */
+        main {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            padding-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+            overflow-x: auto;
+            padding: 20px 0;
+            display: flex;
+            gap: 30px;
+            scroll-behavior: smooth;
+        }
+
+        .carousel-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .game-card {
+            min-width: 320px;
+            height: 200px;
+            border-radius: 20px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-origin: center bottom;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 100%);
+            z-index: 1;
+        }
+
+        .game-card:hover, .game-card.active {
+            transform: scale(1.08) translateY(-10px);
+            border-color: #0088ff;
+            box-shadow: 0 15px 35px rgba(0, 136, 255, 0.4);
+        }
+
+        .game-info {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            z-index: 2;
+        }
+
+        .game-category {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #00ffcc;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .game-name {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Barra Inferior (Footer / Controles) --- */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 25px;
+            height: 50px;
+        }
+
+        .controls-info {
+            display: flex;
+            gap: 25px;
+        }
+
+        .control-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+        }
+
+        .btn-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-icon.blue { background-color: #0088ff; }
+
+        .time-widget {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header com Telemetria -->
+    <header>
+        <div class="logo-section">
+            <div class="logo-icon"></div>
+            <div class="logo-text">NEXA GAME MODE</div>
+        </div>
+        <div class="telemetry-container">
+            <div class="stat-item">
+                <div class="stat-dot" id="gpu-dot"></div>
+                <span>GPU: <span id="gpu-stat">--</span>%</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-dot" id="cpu-dot"></div>
+                <span>CPU: <span id="cpu-stat">--</span>%</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-dot" id="temp-dot"></div>
+                <span>TEMP: <span id="temp-stat">--</span>°C</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Menu Principal Carrossel -->
+    <main>
+        <div class="section-title">Jogos Instalados (Otimizados Zen/GPU)</div>
+        <div class="carousel-wrapper" id="game-list">
+            <!-- Os cards dos jogos serão gerados dinamicamente via Javascript -->
+        </div>
+    </main>
+
+    <!-- Rodapé de Ações -->
+    <footer>
+        <div class="controls-info">
+            <div class="control-btn">
+                <span class="btn-icon blue">A</span>
+                <span>Confirmar / Iniciar</span>
+            </div>
+            <div class="control-btn">
+                <span class="btn-icon">X</span>
+                <span>Opções de Otimização</span>
+            </div>
+        </div>
+        <div class="time-widget" id="clock">00:00</div>
+    </footer>
+
+    <script>
+        let selectedIndex = 0;
+        let games = [];
+
+        // Atualizar Relógio
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Carregar Telemetria
+        async function fetchTelemetry() {
+            try {
+                const response = await fetch('/api/telemetry');
+                const data = await response.json();
+                
+                document.getElementById('cpu-stat').textContent = data.cpu;
+                document.getElementById('gpu-stat').textContent = data.gamemode_active ? '98' : '0';
+                document.getElementById('temp-stat').textContent = data.temperature;
+                
+                // Colorir os pontos baseado no uso/temperatura
+                updateDotColor('cpu-dot', data.cpu, 80);
+                updateDotColor('temp-dot', data.temperature, 75);
+            } catch (err) {
+                console.error("Erro ao ler telemetria:", err);
+            }
+        }
+
+        function updateDotColor(id, value, limit) {
+            const dot = document.getElementById(id);
+            if (value >= limit) {
+                dot.classList.add('warning');
+            } else {
+                dot.classList.remove('warning');
+            }
+        }
+
+        setInterval(fetchTelemetry, 3000);
+        fetchTelemetry();
+
+        // Carregar lista de jogos
+        async function loadGames() {
+            try {
+                const response = await fetch('/api/games');
+                games = await response.json();
+                
+                const listContainer = document.getElementById('game-list');
+                listContainer.innerHTML = '';
+                
+                games.forEach((game, index) => {
+                    const card = document.createElement('div');
+                    card.className = `game-card ${index === 0 ? 'active' : ''}`;
+                    card.style.backgroundImage = `url('${game.banner}')`;
+                    card.innerHTML = `
+                        <div class="game-info">
+                            <div class="game-category">${game.category}</div>
+                            <div class="game-name">${game.name}</div>
+                        </div>
+                    `;
+                    
+                    card.addEventListener('click', () => launchGame(game));
+                    listContainer.appendChild(card);
+                });
+                
+                setupKeyboardNavigation();
+            } catch (err) {
+                console.error("Erro ao ler jogos:", err);
+            }
+        }
+
+        // Lançar o Jogo via Backend FastAPI
+        async function launchGame(game) {
+            try {
+                const res = await fetch('/api/games/launch', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        command: game.command,
+                        game_name: game.name
+                    })
+                });
+                const data = await res.json();
+                alert(data.detail);
+            } catch (err) {
+                alert("Erro ao disparar jogo: " + err);
+            }
+        }
+
+        // Navegação por Teclado (Simulando Controle de Console)
+        function setupKeyboardNavigation() {
+            const cards = document.querySelectorAll('.game-card');
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    if (selectedIndex < games.length - 1) {
+                        cards[selectedIndex].classList.remove('active');
+                        selectedIndex++;
+                        cards[selectedIndex].classList.add('active');
+                        cards[selectedIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                } else if (e.key === 'ArrowLeft') {
+                    if (selectedIndex > 0) {
+                        cards[selectedIndex].classList.remove('active');
+                        selectedIndex--;
+                        cards[selectedIndex].classList.add('active');
+                        cards[selectedIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                } else if (e.key === 'Enter') {
+                    launchGame(games[selectedIndex]);
+                }
+            });
+        }
+
+        loadGames();
+    </script>
+</body>
+</html>
