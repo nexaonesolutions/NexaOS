@@ -1,17 +1,12 @@
 [Unit]
-Description=Nexa IA Core Daemon (FastAPI Automation Service)
+Description=Nexa Control Center Backend
 After=network.target
 
 [Service]
-Type=simple
-# Instala uvicorn via pip na primeira execucao caso nao esteja presente no sistema.
-# Isso garante que o servico funcione sem depender do pacman para python-uvicorn.
-ExecStartPre=/bin/sh -c 'python3 -c "import uvicorn" 2>/dev/null || pip3 install uvicorn --quiet'
-ExecStart=/usr/bin/python3 /usr/local/bin/nexa-ia.py
+ExecStart=/usr/bin/python /usr/local/bin/nexa-ia.py
 Restart=always
-RestartSec=3
 User=root
-Environment=PYTHONUNBUFFERED=1
+WorkingDirectory=/usr/share/nexa-cc
 
 [Install]
 WantedBy=multi-user.target

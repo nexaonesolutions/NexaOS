@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexa Control Center</title>
+    <style>
+        :root {
+            --glass-bg: rgba(20, 20, 20, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #ffffff;
+            --accent: #0088ff;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: transparent;
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 20px;
+        }
+        .sidebar h2 {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        .menu-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--accent);
+        }
+        .content {
+            flex: 1;
+            padding: 40px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(30px);
+        }
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .slider-container {
+            margin-top: 20px;
+        }
+        input[type=range] {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--accent);
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Nexa OS</h2>
+        <div class="menu-item active">Personalização</div>
+        <div class="menu-item">Privacidade (AdShield)</div>
+        <div class="menu-item">Sistema e Instalação</div>
+    </div>
+    <div class="content">
+        <h1>Personalização</h1>
+        
+        <div class="card">
+            <h3>Opacidade da Barra (Waybar)</h3>
+            <p>Ajuste a transparência da barra superior em tempo real.</p>
+            <div class="slider-container">
+                <input type="range" id="opacitySlider" min="0" max="100" value="65">
+                <span id="opacityValue">65%</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Nexa AdShield</h3>
+            <p>Bloqueie propagandas e rastreadores em nível de DNS em todo o sistema.</p>
+            <label class="toggle-switch">
+                <input type="checkbox" id="adshieldToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('opacitySlider').addEventListener('input', function(e) {
+            document.getElementById('opacityValue').innerText = e.target.value + '%';
+        });
+
+        document.getElementById('opacitySlider').addEventListener('change', function(e) {
+            fetch('/api/theme/opacity?level=' + e.target.value, {method: 'POST'})
+                .then(res => res.json())
+                .then(data => console.log('Opacity updated', data));
+        });
+
+        document.getElementById('adshieldToggle').addEventListener('change', function(e) {
+            fetch('/api/system/adshield?enabled=' + e.target.checked, {method: 'POST'})
+                .then(res => res.json())
+                .then(data => console.log('AdShield toggled', data));
+        });
+    </script>
+</body>
+</html>
