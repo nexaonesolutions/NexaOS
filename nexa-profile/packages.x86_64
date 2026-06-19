@@ -61,9 +61,8 @@ qt6-wayland
 sddm
 
 # --- Status Bar, Launchers & Shell ---
-# NOTE: 'ags' (Aylur's Gtk Shell) is AUR-only and must be installed post-install.
-#       Config files are pre-placed in ~/.config/ags/ via skel.
-#       Waybar included as the official repo fallback bar.
+# ags (Aylur's Gtk Shell) agora disponível via Chaotic-AUR
+ags
 waybar
 rofi-wayland
 dunst
@@ -75,6 +74,7 @@ slurp
 papirus-icon-theme
 
 # --- Live Installer & Utilities ---
+# calamares disponível via Chaotic-AUR
 calamares
 git
 zsh
@@ -86,6 +86,10 @@ rsync
 htop
 fastfetch
 firefox
+
+# --- Chaotic-AUR Keyring (permite que o usuário use o Chaotic-AUR pós-instalação) ---
+chaotic-keyring
+chaotic-mirrorlist
 
 # --- Módulo Work (Desenvolvimento & Backend) ---
 docker

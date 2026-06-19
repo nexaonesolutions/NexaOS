@@ -252,11 +252,35 @@ log_info "Fase 6: Iniciando compilação do NexaOS-Installer.iso..."
 
 # Garantir que o keyring do pacman está populado e os bancos sincronizados.
 # Isso é crítico em ambientes containerizados onde o keyring pode estar vazio.
-log_info "Inicializando keyring do pacman e sincronizando bases de dados..."
+log_info "Inicializando keyring do pacman (Arch + Chaotic-AUR)..."
 pacman-key --init
 pacman-key --populate archlinux
+
+# Configurar Chaotic-AUR para o ambiente de build do mkarchiso.
+# O mkarchiso usa o pacman.conf do PERFIL, que referencia /etc/pacman.d/chaotic-mirrorlist.
+# As chaves e a mirrorlist precisam estar disponíveis no HOST (container) para que
+# o pacman possa verificar e baixar pacotes do Chaotic-AUR durante a compilação.
+if [ ! -f /etc/pacman.d/chaotic-mirrorlist ]; then
+    log_info "Configurando Chaotic-AUR no ambiente de build..."
+    pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+    pacman-key --lsign-key 3056513887B78AEB
+    pacman -U --noconfirm \
+        'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
+        'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+    # Adicionar Chaotic-AUR ao pacman.conf do host se ainda não estiver
+    if ! grep -q '\[chaotic-aur\]' /etc/pacman.conf; then
+        echo '' >> /etc/pacman.conf
+        echo '[chaotic-aur]' >> /etc/pacman.conf
+        echo 'SigLevel = DatabaseNever' >> /etc/pacman.conf
+        echo 'Include = /etc/pacman.d/chaotic-mirrorlist' >> /etc/pacman.conf
+    fi
+    log_ok "Chaotic-AUR configurado no host."
+else
+    log_ok "Chaotic-AUR já configurado no host."
+fi
+
 pacman -Sy --noconfirm
-log_ok "Keyring e bases de dados prontos."
+log_ok "Keyring e bases de dados prontos (Arch + Chaotic-AUR)."
 
 # Limpar build anterior
 if [ -d "${WORK_DIR}" ]; then

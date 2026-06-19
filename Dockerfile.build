@@ -2,11 +2,6 @@
 #  NEXA OS - DOCKERFILE DE COMPILAÇÃO ISOLADA
 #  Ambiente containerizado Arch Linux para rodar o build.sh
 #  sem depender de um sistema host Arch nativo.
-#
-#  USO:
-#    No Windows via start-build.bat
-#    No Linux:  docker build -t nexaos-builder -f Dockerfile.build .
-#               docker run --rm -v "$(pwd):/build" --privileged nexaos-builder
 # ==============================================================================
 
 FROM archlinux:latest
@@ -14,15 +9,30 @@ FROM archlinux:latest
 LABEL maintainer="Nexa Solutions <nexasolutions@github.com>"
 LABEL description="Ambiente de build isolado para a ISO do Nexa OS"
 
-# 1. Inicializar o keyring do pacman — CRÍTICO para containers Arch Linux.
-#    Sem isso, o pacman não consegue verificar assinaturas de pacotes.
+# 1. Inicializar keyring do Arch Linux (crítico em containers)
 RUN pacman-key --init && \
     pacman-key --populate archlinux
 
-# 2. Atualizar o sistema base do container Arch Linux
+# 2. Atualizar o sistema base
 RUN pacman -Syu --noconfirm
 
-# 3. Instalar dependências do pipeline de compilação
+# 3. Configurar o Chaotic-AUR — repositório binário de pacotes AUR
+#    Usado por distros como Garuda Linux, CachyOS, etc.
+#    Permite que o mkarchiso instale 'calamares', 'ags', e outros pacotes AUR diretamente.
+RUN pacman -S --noconfirm gnupg && \
+    pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com && \
+    pacman-key --lsign-key 3056513887B78AEB && \
+    pacman -U --noconfirm \
+        'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
+        'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+
+# 4. Adicionar Chaotic-AUR ao pacman.conf do HOST (container builder)
+RUN echo '' >> /etc/pacman.conf && \
+    echo '[chaotic-aur]' >> /etc/pacman.conf && \
+    echo 'Include = /etc/pacman.d/chaotic-mirrorlist' >> /etc/pacman.conf && \
+    pacman -Sy --noconfirm
+
+# 5. Instalar dependências do pipeline de compilação
 RUN pacman -S --noconfirm \
     archiso \
     git \
@@ -35,11 +45,11 @@ RUN pacman -S --noconfirm \
     fontconfig \
     ttf-dejavu
 
-# 4. Atualizar o cache de fontes para o ImageMagick reconhecer as fontes instaladas
+# 6. Atualizar cache de fontes para ImageMagick
 RUN fc-cache -fv
 
-# 5. Configurar o diretório de trabalho (mapeado via volume pelo host)
+# 7. Configurar diretório de trabalho
 WORKDIR /build
 
-# 6. Ponto de entrada: executa o pipeline de 5 fases do build.sh
+# 8. Ponto de entrada
 CMD ["/bin/bash", "./build.sh"]
