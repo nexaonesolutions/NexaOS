@@ -236,14 +236,8 @@ else
     mkdir -p "${PROFILE_DIR}/syslinux"
 fi
 
-if [ -d "${RELENG_SRC}/efiboot" ]; then
-    mkdir -p "${PROFILE_DIR}/efiboot"
-    cp -r "${RELENG_SRC}/efiboot/." "${PROFILE_DIR}/efiboot/"
-    log_ok "Configurações efiboot copiadas do releng."
-else
-    log_warn "Diretório efiboot do releng não encontrado. Criando estrutura mínima..."
-    mkdir -p "${PROFILE_DIR}/efiboot"
-fi
+# O efiboot não é mais copiado do releng pois nós mantemos nossa própria
+# versão customizada com suporte ao linux-zen em nexa-profile/efiboot
 
 # ==============================================================================
 # FASE 6: COMPILAÇÃO DA ISO
