@@ -30,6 +30,11 @@ nfs-utils
 openssh
 wpa_supplicant
 
+# --- Bluetooth ---
+bluez
+bluez-utils
+blueman
+
 # --- Sound & Audio ---
 pipewire
 pipewire-alsa
@@ -106,6 +111,8 @@ steam
 wine-staging
 gamemode
 lib32-gamemode
+mangohud
+lib32-mangohud
 giflib
 lib32-giflib
 gnutls

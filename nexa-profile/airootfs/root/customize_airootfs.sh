@@ -51,6 +51,7 @@ echo "[NEXA] Shell padrão definido como zsh."
 #     aqui habilitamos via systemctl para o live environment)
 # ==============================================================================
 systemctl enable NetworkManager.service
+systemctl enable bluetooth.service
 systemctl enable sddm.service
 systemctl enable docker.service
 systemctl enable nexa-ia.service 2>/dev/null || echo "[NEXA] nexa-ia.service não disponível no live, pulando."
