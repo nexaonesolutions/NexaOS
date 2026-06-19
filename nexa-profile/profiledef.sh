@@ -9,10 +9,8 @@ iso_version="1.0-alpha"
 install_dir="arch"
 buildmodes=('iso')
 bootmodes=(
-    'bios.syslinux.mbr'
-    'bios.syslinux.eltorito'
-    'uefi-x64.systemd-boot.esp'
-    'uefi-x64.systemd-boot.eltorito'
+    'bios.syslinux'
+    'uefi.systemd-boot'
 )
 arch="x86_64"
 pacman_conf="pacman.conf"
@@ -21,7 +19,4 @@ airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86')
 file_permissions=(
   ["/etc/shadow"]="0:0:0400"
   ["/etc/gshadow"]="0:0:0400"
-  ["/root"]="0:0:0750"
-  ["/root/.gnupg"]="0:0:0700"
-  ["/usr/local/bin/nexa-ia.py"]="0:0:0755"
 )
